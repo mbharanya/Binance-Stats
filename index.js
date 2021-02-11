@@ -35,11 +35,13 @@ binance.balance(async (error, balances) => {
 
     const pricesOfCurrencies = Object.keys(currentCurrencies).map(k => {
         const coinAmount = balances[k].available
+        
+        const changeForCurrency = prevDayChange.find(c => c.symbol == k + "USDT");
         return {
             "coin": k,
             "coinAmount": coinAmount,
-            "usdT": currentPrices[k + "USDT"] * coinAmount,
-            "prevDayChangePercentage": prevDayChange.find(c => c.symbol == k + "USDT").priceChangePercent
+            "usdT": k == "USDT" ? new Number(coinAmount) : currentPrices[k + "USDT"] * coinAmount,
+            "prevDayChangePercentage": changeForCurrency?.priceChangePercent || 0
         }
     })
 
@@ -59,7 +61,7 @@ binance.balance(async (error, balances) => {
             c.coin,
             c.coinAmount,
             Math.round(c.usdT * 100) / 100,
-            `${c.prevDayChangePercentage > 0 ? "+" + clc.green(c.prevDayChangePercentage) : clc.red(c.prevDayChangePercentage)}%`
+            `${c.prevDayChangePercentage >= 0 ? "+" + clc.green(c.prevDayChangePercentage) : clc.red(c.prevDayChangePercentage)}%`
         ])
     )
     table.push(["💰Total","", `${Math.round(total * 100) / 100} USD`, ""])
