@@ -39,6 +39,6 @@ docker run -e  BINANCE_API_KEY=<your binance key here> -e BINANCE_API_SECRET=<yo
 ```bash
 npm install
 npm start
-# build docker
-npm run build:docker
+# build docker image locally
+npm run docker:build
 ```
