@@ -50,7 +50,7 @@ binance.balance(async (error, balances) => {
     const total = sorted.map(_ => _.usdT).reduce((a, b) => a + b, 0)
 
     const table = new Table({
-        head: ['Coin', 'Amount', 'USD', '24 Change'],
+        head: ['Coin', 'Amount', 'USD', '24h Change'],
         colWidths: [10, 20, 15, 15],
         style: { 'head': 'white', 'padding-top': 0, 'padding-bottom': 0 }
     });
