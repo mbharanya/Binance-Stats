@@ -43,13 +43,21 @@ binance.balance(async (error, balances) => {
 
     const pricesOfCurrencies = Object.keys(currentCurrencies).map(k => {
         const coinAmount = balances[k].available
-        
-        const changeForCurrency = prevDayChange.find(c => c.symbol == k + "USDT");
+        // try to find usd equivalent, otherwise BTC -> USDT
+        const changeComparedToUSDT = prevDayChange.find(c => c.symbol == k + "USDT");
+        const changeComparedToBTC = prevDayChange.find(c => c.symbol == k + "BTC")
+
+        let usdTAmount = currentPrices[k + "USDT"] * coinAmount
+        if (!usdTAmount){
+            const btcAmount = currentPrices[k + "BTC"] * coinAmount
+            usdTAmount = currentPrices["BTC" + "USDT"] * btcAmount
+        }
+
         return {
             "coin": k,
             "coinAmount": coinAmount,
-            "usdT": k == "USDT" ? new Number(coinAmount) : currentPrices[k + "USDT"] * coinAmount,
-            "prevDayChangePercentage": changeForCurrency?.priceChangePercent || 0
+            "usdT": k == "USDT" ? new Number(coinAmount) : usdTAmount,
+            "prevDayChangePercentage": (changeComparedToUSDT || changeComparedToBTC)?.priceChangePercent || 0
         }
     })
 
