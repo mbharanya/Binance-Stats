@@ -22,7 +22,15 @@ Object.filter = (obj, predicate) =>
 
 
 binance.balance(async (error, balances) => {
-    if (error) return console.error(error);
+    if (error){
+        const errMsg = JSON.parse(error.body)?.msg;
+        if (error?.body && errMsg){
+            console.error(errMsg);
+        }else{
+            console.error(error)
+        }
+        process.exit(1);
+    } 
     const currentCurrencies = Object.filter(balances, c => c.available > 0)
     const currentPrices = await binance.prices();
 
