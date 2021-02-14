@@ -42,7 +42,7 @@ binance.balance(async (error, balances) => {
     )
 
     const pricesOfCurrencies = Object.keys(currentCurrencies).map(k => {
-        const coinAmount = new Number(balances[k].available)
+        const coinAmount = parseFloat(balances[k].available)
         // try to find usd equivalent, otherwise BTC -> USDT
         const changeComparedToUSDT = prevDayChange.find(c => c.symbol == k + "USDT");
         const changeComparedToBTC = prevDayChange.find(c => c.symbol == k + "BTC")
@@ -66,7 +66,7 @@ binance.balance(async (error, balances) => {
     const total = sorted.map(_ => _.usdT).reduce((a, b) => a + b, 0)
 
     const totalPercentage = sorted.map(_ => 
-        _.usdT * new Number(_.prevDayChangePercentage)
+        _.usdT * parseFloat(_.prevDayChangePercentage)
         ).reduce((a, b) => a + b, 0) / total
 
     const table = new Table({
@@ -81,7 +81,7 @@ binance.balance(async (error, balances) => {
             c.coin,
             c.coinAmount,
             round(c.usdT),
-            getColoredPercentage(new Number(c.prevDayChangePercentage))
+            getColoredPercentage(parseFloat(c.prevDayChangePercentage))
         ])
     )
     table.push(["💰Total","", `${round(total)} USD`, getColoredPercentage(totalPercentage)])
