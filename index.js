@@ -65,6 +65,8 @@ binance.balance(async (error, balances) => {
 
     const total = sorted.map(_ => _.usdT).reduce((a, b) => a + b, 0)
 
+    const totalPercentage = sorted.map(_ => new Number(_.prevDayChangePercentage)).reduce((a, b) => a + b, 0) / sorted.length
+
     const table = new Table({
         head: ['Coin', 'Amount', 'USD', '24h Change'],
         colWidths: [10, 20, 15, 15],
@@ -76,11 +78,20 @@ binance.balance(async (error, balances) => {
         table.push([
             c.coin,
             c.coinAmount,
-            Math.round(c.usdT * 100) / 100,
-            `${c.prevDayChangePercentage >= 0 ? "+" + clc.green(c.prevDayChangePercentage) : clc.red(c.prevDayChangePercentage)}%`
+            round(c.usdT),
+            getColoredPercentage(c.prevDayChangePercentage)
         ])
     )
-    table.push(["💰Total","", `${Math.round(total * 100) / 100} USD`, ""])
+    table.push(["💰Total","", `${round(total)} USD`, getColoredPercentage(totalPercentage)])
 
     console.log(table.toString());
 });
+
+function round(amount){
+    return Math.round(amount * 100) / 100
+}
+
+function getColoredPercentage(value) {
+    const rounded = round(value)
+    return `${value >= 0 ? "+" + clc.green(rounded) : clc.red(rounded)}%`
+}
